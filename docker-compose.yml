@@ -1,0 +1,16 @@
+version: '3.8'
+
+networks:
+  default:
+
+services:
+  db:
+    image: mysql:8.0.19
+    container_name: conference_security
+    ports:
+    - 3305:3306
+    volumes:
+    - "./.data/db:/var/lib/mysql"
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+      MYSQL_DATABASE: conference_security
