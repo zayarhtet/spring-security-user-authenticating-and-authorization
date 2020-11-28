@@ -1,5 +1,6 @@
 package com.pluralsight.conference;
 
+import com.pluralsight.conference.model.ConferenceUserDetails;
 import com.pluralsight.conference.service.ConferenceUserDetailsContextMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -10,8 +11,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
 import javax.sql.DataSource;
+
 
 @Configuration
 @EnableWebSecurity
@@ -32,11 +36,26 @@ public class ConferenceSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/assets/css/**", "assets/js/**", "/images/**").permitAll()
                 .antMatchers("/index*").permitAll()
                 .anyRequest().authenticated()
+
                 .and()
                 .formLogin()
                 .loginPage("/login")
                 .loginProcessingUrl("/perform_login")
-                .defaultSuccessUrl("/",true);
+                .failureUrl("/login?error=true")
+                .permitAll()
+                .defaultSuccessUrl("/",true)
+
+                .and()
+                .rememberMe()
+                .tokenRepository(tokenRepository());
+    }
+
+    @Bean
+    public PersistentTokenRepository tokenRepository() {
+        JdbcTokenRepositoryImpl token = new JdbcTokenRepositoryImpl();
+
+        token.setDataSource(dataSource);
+        return token;
     }
 
     @Override
@@ -44,18 +63,23 @@ public class ConferenceSecurityConfig extends WebSecurityConfigurerAdapter {
 //        auth.inMemoryAuthentication()
 //                .withUser("bryan").password(passwordEncoder().encode("pass")).roles("USER");
 //        auth.jdbcAuthentication().dataSource(dataSource);
-        auth.ldapAuthentication()
-                .userDnPatterns("uid={0},ou=people")
-                .groupSearchBase("ou=groups")
-                .contextSource()
-                .url("ldap://localhost:8389/dc=pluralsight,dc=com")
-                .and()
-                .passwordCompare()
-                .passwordEncoder(passwordEncoder())
-                .passwordAttribute("userPassword")
-                .and()
-                .userDetailsContextMapper(ctxMapper);
+        auth.jdbcAuthentication()
+                .dataSource(dataSource)
+                .passwordEncoder(passwordEncoder());
+//        auth.ldapAuthentication()
+//                .userDnPatterns("uid={0},ou=people")
+//                .groupSearchBase("ou=groups")
+//                .contextSource()
+//                .url("ldap://localhost:8389/dc=pluralsight,dc=com")
+//                .and()
+//                .passwordCompare()
+//                .passwordEncoder(passwordEncoder())
+//                .passwordAttribute("userPassword")
+//                .and()
+//                .userDetailsContextMapper(ctxMapper);
     }
+
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {

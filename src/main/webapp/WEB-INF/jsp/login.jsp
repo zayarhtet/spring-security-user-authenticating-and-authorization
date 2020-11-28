@@ -50,6 +50,7 @@
         <form:errors path="*" cssClass="errorblock" element="div" />
         <div><label> User Name : <input type="text" name="username"/> </label></div>
         <div><label> Password: <input type="password" name="password"/> </label></div>
+        <div><label>Remember me: <input type="checkbox" name="remember-me"/></label></div>
         <input type="submit" class="btn btn-lg btn-primary" role="button" value="Login"/>
     </form:form>
 

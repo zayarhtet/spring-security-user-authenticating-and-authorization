@@ -41,7 +41,6 @@ public class ConferenceUserDetailsContextMapper implements UserDetailsContextMap
                 return userDetails;
             }
         }, dirContextOperations.getStringAttribute("uid"));
-
         return userDetails;
     }
 
