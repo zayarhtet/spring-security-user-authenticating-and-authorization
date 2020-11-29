@@ -11,6 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
 
@@ -49,5 +50,11 @@ public class AccountController {
 
 
         return "redirect:account";
+    }
+
+    @GetMapping("accountConfirm")
+    public String confirmAccount (@RequestParam("token") String token) {
+        accountService.confirmAccount(token);
+        return "accountConfirmed";
     }
 }
